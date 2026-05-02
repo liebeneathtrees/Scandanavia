@@ -1,0 +1,1019 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nordic Atlas — Norway · Sweden · Finland</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --navy: #080c18;
+  --deep: #0d1426;
+  --panel: #111827;
+  --card: #161f33;
+  --border: rgba(255,255,255,0.08);
+  --teal: #2dd4bf;
+  --aurora: #34d399;
+  --gold: #f59e0b;
+  --lavender: #a78bfa;
+  --rose: #fb7185;
+  --ice: #e0f2fe;
+  --text: #cbd5e1;
+  --muted: #64748b;
+  --white: #f1f5f9;
+
+  --norway: #ef4444;
+  --sweden: #3b82f6;
+  --finland: #22c55e;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  background: var(--navy);
+  color: var(--text);
+  font-family: 'Jost', sans-serif;
+  font-weight: 300;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ── AURORA BACKGROUND ── */
+.aurora-bg {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+#auroraCanvas {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ── LAYOUT ── */
+.wrapper { position: relative; z-index: 1; max-width: 1280px; margin: 0 auto; padding: 0 24px; }
+
+/* ── HEADER ── */
+header {
+  text-align: center;
+  padding: 80px 24px 60px;
+  position: relative;
+  z-index: 1;
+}
+.header-eyebrow {
+  font-family: 'Jost', sans-serif;
+  font-size: 11px;
+  letter-spacing: 0.4em;
+  text-transform: uppercase;
+  color: var(--teal);
+  margin-bottom: 20px;
+  opacity: 0;
+  animation: fadeUp 0.8s 0.2s forwards;
+}
+header h1 {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(52px, 9vw, 110px);
+  font-weight: 300;
+  line-height: 0.9;
+  color: var(--white);
+  letter-spacing: -0.02em;
+  opacity: 0;
+  animation: fadeUp 0.8s 0.4s forwards;
+}
+header h1 em {
+  font-style: italic;
+  color: var(--teal);
+}
+.header-sub {
+  margin-top: 24px;
+  font-size: 16px;
+  color: var(--muted);
+  letter-spacing: 0.05em;
+  opacity: 0;
+  animation: fadeUp 0.8s 0.6s forwards;
+}
+.country-flags {
+  display: flex;
+  justify-content: center;
+  gap: 32px;
+  margin-top: 40px;
+  opacity: 0;
+  animation: fadeUp 0.8s 0.8s forwards;
+}
+.flag-pill {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 20px;
+  border-radius: 100px;
+  border: 1px solid var(--border);
+  background: rgba(255,255,255,0.03);
+  font-size: 13px;
+  letter-spacing: 0.08em;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+.flag-pill:hover { border-color: rgba(45,212,191,0.4); background: rgba(45,212,191,0.05); }
+.flag-pill.no { border-color: rgba(239,68,68,0.3); }
+.flag-pill.se { border-color: rgba(59,130,246,0.3); }
+.flag-pill.fi { border-color: rgba(34,197,94,0.3); }
+
+@keyframes fadeUp { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }
+
+/* ── CONTROLS ── */
+.controls {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: rgba(8,12,24,0.85);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border);
+  padding: 16px 24px;
+}
+.controls-inner {
+  max-width: 1280px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.search-box {
+  flex: 1;
+  min-width: 200px;
+  position: relative;
+}
+.search-box input {
+  width: 100%;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 10px 16px 10px 40px;
+  color: var(--white);
+  font-family: 'Jost', sans-serif;
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+.search-box input::placeholder { color: var(--muted); }
+.search-box input:focus { border-color: rgba(45,212,191,0.5); }
+.search-icon { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--muted); font-size: 14px; pointer-events: none; }
+
+.tab-group { display: flex; gap: 4px; flex-wrap: wrap; }
+.tab {
+  padding: 8px 16px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--muted);
+  font-family: 'Jost', sans-serif;
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+.tab:hover { color: var(--white); border-color: rgba(255,255,255,0.2); }
+.tab.active-no { background: rgba(239,68,68,0.15); border-color: rgba(239,68,68,0.5); color: #fca5a5; }
+.tab.active-se { background: rgba(59,130,246,0.15); border-color: rgba(59,130,246,0.5); color: #93c5fd; }
+.tab.active-fi { background: rgba(34,197,94,0.15); border-color: rgba(34,197,94,0.5); color: #86efac; }
+.tab.active-all { background: rgba(45,212,191,0.15); border-color: rgba(45,212,191,0.5); color: var(--teal); }
+
+.filter-group { display: flex; gap: 4px; flex-wrap: wrap; }
+.filter-btn {
+  padding: 6px 12px;
+  border-radius: 100px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--muted);
+  font-family: 'Jost', sans-serif;
+  font-size: 11px;
+  letter-spacing: 0.05em;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.filter-btn:hover { color: var(--white); }
+.filter-btn.active { background: rgba(45,212,191,0.12); border-color: var(--teal); color: var(--teal); }
+
+/* ── STATS BAR ── */
+.stats-bar {
+  display: flex;
+  gap: 32px;
+  padding: 20px 0;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 48px;
+  flex-wrap: wrap;
+}
+.stat { text-align: center; }
+.stat-num {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 36px;
+  color: var(--white);
+  line-height: 1;
+}
+.stat-label { font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-top: 4px; }
+
+/* ── SECTION HEADERS ── */
+.section-header {
+  display: flex;
+  align-items: baseline;
+  gap: 20px;
+  margin-bottom: 32px;
+  margin-top: 64px;
+}
+.section-header h2 {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(36px, 5vw, 56px);
+  font-weight: 300;
+  color: var(--white);
+  line-height: 1;
+}
+.section-header h2 em { font-style: italic; }
+.section-line { flex: 1; height: 1px; background: var(--border); }
+.section-count { font-size: 12px; letter-spacing: 0.1em; color: var(--muted); text-transform: uppercase; }
+.country-accent-no { color: #ef4444; }
+.country-accent-se { color: #60a5fa; }
+.country-accent-fi { color: #4ade80; }
+
+/* ── CARDS GRID ── */
+.cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  gap: 20px;
+  margin-bottom: 24px;
+}
+
+.card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  overflow: hidden;
+  transition: transform 0.3s, border-color 0.3s, box-shadow 0.3s;
+  cursor: default;
+  animation: cardIn 0.5s both;
+}
+.card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+}
+@keyframes cardIn { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+
+.card.no:hover { border-color: rgba(239,68,68,0.35); }
+.card.se:hover { border-color: rgba(59,130,246,0.35); }
+.card.fi:hover { border-color: rgba(34,197,94,0.35); }
+
+.card-visual {
+  height: 140px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 52px;
+  overflow: hidden;
+}
+.card-visual::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to bottom, transparent 40%, var(--card) 100%);
+}
+
+/* Country-specific gradients */
+.card.no .card-visual { background: linear-gradient(135deg, #1a0a0a 0%, #3d1515 50%, #1a2030 100%); }
+.card.se .card-visual { background: linear-gradient(135deg, #0a1220 0%, #102040 50%, #0d1a30 100%); }
+.card.fi .card-visual { background: linear-gradient(135deg, #0a1a0a 0%, #103020 50%, #0a1a20 100%); }
+
+.card-emoji { position: relative; z-index: 1; filter: drop-shadow(0 4px 12px rgba(0,0,0,0.5)); }
+
+.card-badge {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  z-index: 2;
+  padding: 4px 10px;
+  border-radius: 100px;
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-weight: 500;
+}
+.card.no .card-badge { background: rgba(239,68,68,0.2); color: #fca5a5; border: 1px solid rgba(239,68,68,0.3); }
+.card.se .card-badge { background: rgba(59,130,246,0.2); color: #93c5fd; border: 1px solid rgba(59,130,246,0.3); }
+.card.fi .card-badge { background: rgba(34,197,94,0.2); color: #86efac; border: 1px solid rgba(34,197,94,0.3); }
+
+.card-body { padding: 20px 22px 22px; }
+
+.card-category {
+  font-size: 10px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.cat-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+}
+.cat-dot.nature { background: var(--aurora); }
+.cat-dot.hike { background: var(--teal); }
+.cat-dot.city { background: var(--gold); }
+.cat-dot.castle { background: var(--lavender); }
+.cat-dot.history { background: var(--rose); }
+.cat-dot.experience { background: #fb923c; }
+
+.card-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 22px;
+  font-weight: 400;
+  color: var(--white);
+  margin-bottom: 10px;
+  line-height: 1.2;
+}
+.card-desc {
+  font-size: 14px;
+  line-height: 1.65;
+  color: var(--text);
+  opacity: 0.85;
+}
+
+.card-meta {
+  display: flex;
+  gap: 12px;
+  margin-top: 16px;
+  flex-wrap: wrap;
+}
+.meta-tag {
+  font-size: 11px;
+  padding: 3px 10px;
+  border-radius: 100px;
+  background: rgba(255,255,255,0.05);
+  color: var(--muted);
+  border: 1px solid var(--border);
+}
+.meta-tag.highlight { background: rgba(45,212,191,0.08); color: var(--teal); border-color: rgba(45,212,191,0.2); }
+.meta-tag.unesco { background: rgba(245,158,11,0.08); color: var(--gold); border-color: rgba(245,158,11,0.2); }
+.meta-tag.hard { background: rgba(239,68,68,0.08); color: #fca5a5; border-color: rgba(239,68,68,0.2); }
+.meta-tag.moderate { background: rgba(251,146,60,0.08); color: #fdba74; border-color: rgba(251,146,60,0.2); }
+.meta-tag.easy { background: rgba(34,197,94,0.08); color: #86efac; border-color: rgba(34,197,94,0.2); }
+
+/* ── FEATURED CALLOUTS ── */
+.featured-strip {
+  background: linear-gradient(135deg, rgba(45,212,191,0.06) 0%, rgba(167,139,250,0.06) 100%);
+  border: 1px solid rgba(45,212,191,0.15);
+  border-radius: 20px;
+  padding: 40px 44px;
+  margin: 48px 0;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 32px;
+}
+.featured-item { text-align: center; }
+.featured-icon { font-size: 36px; margin-bottom: 12px; }
+.featured-label {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 20px;
+  color: var(--white);
+  margin-bottom: 8px;
+}
+.featured-desc { font-size: 13px; color: var(--muted); line-height: 1.6; }
+
+/* ── TIPS SECTION ── */
+.tips-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 16px;
+  margin-top: 32px;
+}
+.tip-card {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 20px;
+}
+.tip-icon { font-size: 24px; margin-bottom: 10px; }
+.tip-title { font-family: 'Cormorant Garamond', serif; font-size: 18px; color: var(--white); margin-bottom: 8px; }
+.tip-text { font-size: 13px; line-height: 1.65; color: var(--muted); }
+
+/* ── NO RESULTS ── */
+.no-results {
+  text-align: center;
+  padding: 80px 40px;
+  color: var(--muted);
+  display: none;
+}
+.no-results .nr-icon { font-size: 48px; margin-bottom: 16px; }
+.no-results h3 { font-family: 'Cormorant Garamond', serif; font-size: 28px; color: var(--text); margin-bottom: 8px; }
+
+/* ── FOOTER ── */
+footer {
+  text-align: center;
+  padding: 60px 24px;
+  border-top: 1px solid var(--border);
+  margin-top: 80px;
+  color: var(--muted);
+  font-size: 13px;
+  letter-spacing: 0.05em;
+}
+
+/* ── RESPONSIVE ── */
+@media (max-width: 768px) {
+  .featured-strip { grid-template-columns: 1fr; gap: 24px; padding: 28px; }
+  .cards-grid { grid-template-columns: 1fr; }
+  .controls-inner { flex-direction: column; align-items: stretch; }
+  .stats-bar { gap: 20px; justify-content: center; }
+}
+
+.hidden { display: none !important; }
+</style>
+</head>
+<body>
+
+<canvas id="auroraCanvas"></canvas>
+
+<!-- HEADER -->
+<header>
+  <div class="header-eyebrow">⬡ The Nordic Atlas ⬡</div>
+  <h1>The <em>North</em><br>Awaits</h1>
+  <p class="header-sub">Norway &nbsp;·&nbsp; Sweden &nbsp;·&nbsp; Finland &nbsp;—&nbsp; 60+ destinations, hikes, castles & experiences</p>
+  <div class="country-flags">
+    <div class="flag-pill no" onclick="setCountry('no')">🇳🇴 Norway</div>
+    <div class="flag-pill se" onclick="setCountry('se')">🇸🇪 Sweden</div>
+    <div class="flag-pill fi" onclick="setCountry('fi')">🇫🇮 Finland</div>
+  </div>
+</header>
+
+<!-- STICKY CONTROLS -->
+<div class="controls">
+  <div class="controls-inner">
+    <div class="search-box">
+      <span class="search-icon">⌕</span>
+      <input type="text" id="searchInput" placeholder="Search destinations…" oninput="filterCards()">
+    </div>
+    <div class="tab-group">
+      <button class="tab active-all" onclick="setCountry('all')" id="tab-all">All</button>
+      <button class="tab" onclick="setCountry('no')" id="tab-no">🇳🇴 Norway</button>
+      <button class="tab" onclick="setCountry('se')" id="tab-se">🇸🇪 Sweden</button>
+      <button class="tab" onclick="setCountry('fi')" id="tab-fi">🇫🇮 Finland</button>
+    </div>
+    <div class="filter-group">
+      <button class="filter-btn active" onclick="setCategory('all')" id="filt-all">All</button>
+      <button class="filter-btn" onclick="setCategory('nature')" id="filt-nature">🌿 Nature</button>
+      <button class="filter-btn" onclick="setCategory('hike')" id="filt-hike">🥾 Hikes</button>
+      <button class="filter-btn" onclick="setCategory('city')" id="filt-city">🏙 Cities</button>
+      <button class="filter-btn" onclick="setCategory('castle')" id="filt-castle">🏰 Castles</button>
+      <button class="filter-btn" onclick="setCategory('history')" id="filt-history">📜 History</button>
+      <button class="filter-btn" onclick="setCategory('experience')" id="filt-experience">✨ Experiences</button>
+    </div>
+  </div>
+</div>
+
+<!-- MAIN -->
+<div class="wrapper">
+
+  <div class="stats-bar" id="statsBar">
+    <div class="stat"><div class="stat-num" id="statTotal">62</div><div class="stat-label">Destinations</div></div>
+    <div class="stat"><div class="stat-num">3</div><div class="stat-label">Countries</div></div>
+    <div class="stat"><div class="stat-num">18</div><div class="stat-label">UNESCO Sites</div></div>
+    <div class="stat"><div class="stat-num">14</div><div class="stat-label">Hike Routes</div></div>
+  </div>
+
+  <!-- FEATURED STRIP -->
+  <div class="featured-strip">
+    <div class="featured-item">
+      <div class="featured-icon">🌌</div>
+      <div class="featured-label">Aurora Borealis</div>
+      <div class="featured-desc">Best Oct–Mar above 65°N. Prime spots: Tromsø, Abisko, Saariselkä. Solar activity drives intensity — check KP index apps.</div>
+    </div>
+    <div class="featured-item">
+      <div class="featured-icon">☀️</div>
+      <div class="featured-label">Midnight Sun</div>
+      <div class="featured-desc">June–July above the Arctic Circle. 24 hours of daylight creates an ethereal, surreal experience unlike anything else on Earth.</div>
+    </div>
+    <div class="featured-item">
+      <div class="featured-icon">🛳</div>
+      <div class="featured-label">Coastal Voyages</div>
+      <div class="featured-desc">Hurtigruten (Norway), Stockholm Archipelago ferries, and Finland's Archipelago Trail offer the finest maritime experiences in Europe.</div>
+    </div>
+  </div>
+
+  <!-- ══════════════════ NORWAY ══════════════════ -->
+  <div class="section-header" id="sec-no">
+    <h2><em class="country-accent-no">Norway</em></h2>
+    <div class="section-line"></div>
+    <div class="section-count" id="count-no"></div>
+  </div>
+
+  <div class="cards-grid" id="grid-no"></div>
+
+  <!-- ══════════════════ SWEDEN ══════════════════ -->
+  <div class="section-header" id="sec-se">
+    <h2><em class="country-accent-se">Sweden</em></h2>
+    <div class="section-line"></div>
+    <div class="section-count" id="count-se"></div>
+  </div>
+
+  <div class="cards-grid" id="grid-se"></div>
+
+  <!-- ══════════════════ FINLAND ══════════════════ -->
+  <div class="section-header" id="sec-fi">
+    <h2><em class="country-accent-fi">Finland</em></h2>
+    <div class="section-line"></div>
+    <div class="section-count" id="count-fi"></div>
+  </div>
+
+  <div class="cards-grid" id="grid-fi"></div>
+
+  <!-- NO RESULTS -->
+  <div class="no-results" id="noResults">
+    <div class="nr-icon">🧭</div>
+    <h3>No destinations found</h3>
+    <p>Try adjusting your search or filters.</p>
+  </div>
+
+  <!-- PRACTICAL TIPS -->
+  <div class="section-header" id="sec-tips">
+    <h2>Practical <em>Tips</em></h2>
+    <div class="section-line"></div>
+  </div>
+
+  <div class="tips-grid">
+    <div class="tip-card">
+      <div class="tip-icon">🚆</div>
+      <div class="tip-title">Getting Around</div>
+      <div class="tip-text">Norway's rail network is scenic but limited — rent a car for the fjords. Sweden has excellent trains (SJ). Finland's VR rail connects major cities. Flixbus links cross-border routes affordably.</div>
+    </div>
+    <div class="tip-card">
+      <div class="tip-icon">🏕</div>
+      <div class="tip-title">Allemansrätten</div>
+      <div class="tip-text">Sweden's "right to roam" allows camping anywhere in nature for up to 2 nights (similar laws in Norway & Finland). The key rule: leave no trace and respect private property near homes.</div>
+    </div>
+    <div class="tip-card">
+      <div class="tip-icon">💰</div>
+      <div class="tip-title">Budget Reality</div>
+      <div class="tip-text">All three countries are expensive. Norway is the priciest. Budget €80–150/day for mid-range. Cook at grocery stores (Rema 1000, Lidl), use hostels, and book accommodation far in advance for summer.</div>
+    </div>
+    <div class="tip-card">
+      <div class="tip-icon">🧥</div>
+      <div class="tip-title">Weather & Layers</div>
+      <div class="tip-text">Pack the "Scandinavian base layer system": moisture-wicking base, fleece mid-layer, waterproof shell — even in July. Weather changes rapidly, especially in mountain terrain. Wool is your friend.</div>
+    </div>
+    <div class="tip-card">
+      <div class="tip-icon">📅</div>
+      <div class="tip-title">Best Time to Visit</div>
+      <div class="tip-text">June–August for hiking, fjords & midnight sun. Dec–Feb for northern lights, skiing, and husky safaris. September has stunning autumn colors in Lapland with fewer crowds and decent light.</div>
+    </div>
+    <div class="tip-card">
+      <div class="tip-icon">🗺</div>
+      <div class="tip-title">Useful Apps</div>
+      <div class="tip-text">Maps.me (offline maps), YR (Nordic weather app), Aurora Forecast, Ruter/Entur (Norway transport), SJ (Sweden trains), VR (Finland trains), and Finn.no for cabin rentals.</div>
+    </div>
+    <div class="tip-card">
+      <div class="tip-icon">🐻</div>
+      <div class="tip-title">Wildlife Encounters</div>
+      <div class="tip-text">Reindeer roam freely in Lapland (all 3 countries) — they have right of way on roads. Elk/moose are common. Finland and Sweden have brown bears; guided tours are the safest way to spot them.</div>
+    </div>
+    <div class="tip-card">
+      <div class="tip-icon">🏊</div>
+      <div class="tip-title">Sauna Culture</div>
+      <div class="tip-text">Saunas are sacred in Finland (3.3 million saunas for 5.5 million people). Always shower before entering. The cycle: sauna → cold lake/sea plunge → rest → repeat. Smoke saunas in Savonlinna are legendary.</div>
+    </div>
+    <div class="tip-card">
+      <div class="tip-icon">🌐</div>
+      <div class="tip-title">Language Tips</div>
+      <div class="tip-text">English is near-universally spoken in all three countries. Learning a few phrases earns respect: "Takk" (thanks, NO/SE), "Tack" (thanks, Swedish), "Kiitos" (thanks, Finnish). Finnish is unrelated to the others.</div>
+    </div>
+  </div>
+
+</div>
+
+<footer>
+  Nordic Atlas &nbsp;·&nbsp; 🇳🇴 🇸🇪 🇫🇮 &nbsp;·&nbsp; Built with love for the North
+</footer>
+
+<script>
+// ── AURORA BOREALIS RENDERER ──
+(function() {
+  const canvas = document.getElementById('auroraCanvas');
+  const ctx = canvas.getContext('2d');
+
+  function resize() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  // s = slow time: 1 unit ≈ 100 seconds of real time
+  // All wave phases are driven by s, so a full oscillation takes many minutes
+  const bands = [
+    { y: 0.18, color1: [0, 255, 160],  color2: [0, 200, 255],  speed: 0.11, amp: 0.06, freq: 1.4, phase: 0,   width: 0.22, alpha: 0.55 },
+    { y: 0.10, color1: [120, 80, 255], color2: [0, 220, 200],  speed: 0.07, amp: 0.05, freq: 1.1, phase: 2.1, width: 0.18, alpha: 0.40 },
+    { y: 0.28, color1: [0, 255, 120],  color2: [80, 120, 255], speed: 0.13, amp: 0.04, freq: 1.7, phase: 4.5, width: 0.14, alpha: 0.35 },
+    { y: 0.06, color1: [200, 60, 255], color2: [0, 255, 180],  speed: 0.05, amp: 0.07, freq: 0.9, phase: 1.3, width: 0.20, alpha: 0.28 },
+    { y: 0.34, color1: [0, 200, 255],  color2: [60, 255, 140], speed: 0.09, amp: 0.03, freq: 2.1, phase: 3.3, width: 0.12, alpha: 0.25 },
+  ];
+
+  function drawBand(band, s) {
+    const W = canvas.width;
+    const H = canvas.height;
+    const steps = 120;
+    const bandH = band.width * H;
+
+    for (let i = 0; i < steps; i++) {
+      const x0 = (i / steps) * W;
+      const x1 = ((i + 1) / steps) * W;
+      const nx = i / steps;
+
+      // Wavy centerline — all time terms use s (very slow)
+      const wave = Math.sin(nx * Math.PI * 2 * band.freq + s * band.speed + band.phase)
+                 + 0.4 * Math.sin(nx * Math.PI * 3.7 * band.freq + s * band.speed * 0.7 + band.phase + 1)
+                 + 0.2 * Math.sin(nx * Math.PI * 7   * band.freq + s * band.speed * 0.5);
+      const cy = (band.y + wave * band.amp) * H;
+
+      // Slow brightness ripple
+      const ripple = 0.5 + 0.5 * Math.sin(nx * 8 + s * 0.3 + band.phase);
+      const localAlpha = band.alpha * (0.6 + 0.4 * ripple);
+
+      // Slow color shift
+      const lp = Math.sin(nx * Math.PI + s * 0.08) * 0.5 + 0.5;
+      const r = Math.round(band.color1[0] * lp + band.color2[0] * (1 - lp));
+      const g = Math.round(band.color1[1] * lp + band.color2[1] * (1 - lp));
+      const b = Math.round(band.color1[2] * lp + band.color2[2] * (1 - lp));
+
+      // Vertical gradient for the curtain
+      const grad = ctx.createLinearGradient(x0, cy - bandH / 2, x0, cy + bandH / 2);
+      grad.addColorStop(0,   `rgba(${r},${g},${b},0)`);
+      grad.addColorStop(0.2, `rgba(${r},${g},${b},${localAlpha * 0.6})`);
+      grad.addColorStop(0.5, `rgba(${r},${g},${b},${localAlpha})`);
+      grad.addColorStop(0.8, `rgba(${r},${g},${b},${localAlpha * 0.5})`);
+      grad.addColorStop(1,   `rgba(${r},${g},${b},0)`);
+
+      ctx.fillStyle = grad;
+      ctx.fillRect(x0, cy - bandH / 2, x1 - x0 + 1, bandH);
+    }
+  }
+
+  function render(timestamp) {
+    // Convert ms timestamp → slow time: divide by 100,000
+    // So 1 full second of real time = 0.00001 units → extremely slow drift
+    const s = timestamp / 500;
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.globalCompositeOperation = 'lighter';
+    bands.forEach(band => drawBand(band, s));
+    ctx.globalCompositeOperation = 'source-over';
+    requestAnimationFrame(render);
+  }
+
+  requestAnimationFrame(render);
+})();
+
+const DESTINATIONS = [
+  // ══════════════ NORWAY ══════════════
+  // Hikes
+  { id:'no1', country:'no', category:'hike', emoji:'🪨', title:'Trolltunga', region:'Hordaland',
+    desc:'One of Norway\'s most dramatic hikes — a 22 km round trip to a rock ledge jutting horizontally 700 m above Lake Ringedalsvatnet. Allow 10–12 hours. The payoff is extraordinary.',
+    tags:['22 km', 'Jun–Sep', 'Strenuous'], badges:['hard'] },
+  { id:'no2', country:'no', category:'hike', emoji:'🏔', title:'Preikestolen (Pulpit Rock)', region:'Rogaland',
+    desc:'A flat-topped cliff 604 m above the Lysefjord. The 8 km round-trip hike is moderately challenging with some scrambling. Arrives near Stavanger by ferry — one of the world\'s most photographed viewpoints.',
+    tags:['8 km', 'Apr–Oct', 'Moderate'], badges:['moderate'] },
+  { id:'no3', country:'no', category:'hike', emoji:'🔷', title:'Besseggen Ridge', region:'Jotunheimen',
+    desc:'Hike between two lakes of strikingly different colors — emerald Gjende and the deep blue Bessvatnet — along a narrow ridge that drops away sharply on both sides. A Norwegian classic.',
+    tags:['15 km', 'Jul–Sep', 'Challenging'], badges:['hard'] },
+  { id:'no4', country:'no', category:'hike', emoji:'🦅', title:'Kjerag (Kjeragbolten)', region:'Rogaland',
+    desc:'Famous for a boulder wedged in a crevice with a 1,000 m drop below it. The 12 km trail involves serious ascent but requires no technical gear — just nerve for the boulder photo.',
+    tags:['12 km', 'Jun–Sep', 'Hard'], badges:['hard'] },
+  { id:'no5', country:'no', category:'hike', emoji:'🏞', title:'Romsdalen & Romsdalseggen Ridge', region:'Møre og Romsdal',
+    desc:'Less touristy than the fjord classics, the Romsdalseggen ridge offers jaw-dropping views over the Romsdalen valley and the dramatic Trolltindane peaks. A genuine bucket-list route.',
+    tags:['10 km one-way', 'Jul–Sep', 'Strenuous'], badges:['hard'] },
+  { id:'no6', country:'no', category:'hike', emoji:'🌊', title:'Hardangervidda Traverse', region:'Hardanger',
+    desc:'Europe\'s largest high mountain plateau — a vast, treeless wilderness with reindeer herds. Multi-day hut-to-hut trekking through snow-streaked terrain. The Numedal Trail is spectacular.',
+    tags:['Multi-day', 'Jul–Sep', 'Remote'], badges:['highlight'] },
+
+  // Nature
+  { id:'no7', country:'no', category:'nature', emoji:'🏔', title:'Geirangerfjord', region:'Sunnmøre',
+    desc:'A UNESCO World Heritage fjord with waterfalls tumbling from sheer 1,400 m walls. The Seven Sisters and Suitor falls are legendary. Best experienced by boat from Geiranger village.',
+    tags:['UNESCO', 'May–Oct'], badges:['unesco'] },
+  { id:'no8', country:'no', category:'nature', emoji:'🌊', title:'Nærøyfjord', region:'Sogn',
+    desc:'The narrowest fjord in Europe and co-UNESCO listed with Geiranger. Kayaking here is sublime — just 250 m wide at its tightest point, with sheer cliffs rising vertically from the water.',
+    tags:['UNESCO', 'Apr–Oct', 'Kayak'], badges:['unesco'] },
+  { id:'no9', country:'no', category:'nature', emoji:'🏝', title:'Lofoten Islands', region:'Nordland',
+    desc:'Jaw-dropping archipelago of spiky peaks, turquoise bays, red fishing villages (rorbuer), and white sand beaches — surprisingly warm in summer. Prime photography destination in any season.',
+    tags:['Year-round', 'Coastal', 'Aurora'], badges:['highlight'] },
+  { id:'no10', country:'no', category:'nature', emoji:'🌿', title:'Jotunheimen National Park', region:'Oppland/Sogn',
+    desc:'Home to Norway\'s two highest peaks — Galdhøpiggen (2,469 m) and Glittertind. A staggering landscape of glaciers, lakes, and mountain plateaus. The name means "Home of the Giants."',
+    tags:['Hiking', 'Glaciers', 'Wildlife'], badges:['highlight'] },
+  { id:'no11', country:'no', category:'nature', emoji:'🐋', title:'Tromsø & the Arctic', region:'Troms',
+    desc:'Norway\'s Arctic capital is the world\'s best city for northern lights, whale watching (Nov–Jan), dog sledding, and midnight sun. Svalbard is reachable from here for polar exploration.',
+    tags:['Aurora', 'Whale Watching', 'Arctic'], badges:['highlight'] },
+  { id:'no12', country:'no', category:'nature', emoji:'🛤', title:'Atlantic Ocean Road', region:'Møre og Romsdal',
+    desc:'A breathtaking series of bridges and causeways linking small islands across open ocean. Voted Norway\'s Construction of the Century. Drive it in stormy weather for maximum drama.',
+    tags:['Road Trip', 'Year-round', 'Bridges'], badges:['highlight'] },
+
+  // Cities
+  { id:'no13', country:'no', category:'city', emoji:'🐟', title:'Bergen', region:'Vestland',
+    desc:'Norway\'s gateway to the fjords, with the UNESCO Bryggen wharf — a row of colorful medieval Hanseatic buildings. Take the Fløibanen funicular for panoramic views. Vibrant fish market and arts scene.',
+    tags:['UNESCO', 'Hanseatic', 'Funicular'], badges:['unesco'] },
+  { id:'no14', country:'no', category:'city', emoji:'🎨', title:'Ålesund', region:'Møre og Romsdal',
+    desc:'Rebuilt in Art Nouveau style after a devastating 1904 fire. The result is a spectacularly coherent architecture across an island town. Climb the 418 steps of Aksla hill for the best view.',
+    tags:['Art Nouveau', 'Islands', 'Viewpoint'], badges:['highlight'] },
+  { id:'no15', country:'no', category:'city', emoji:'⚓', title:'Stavanger', region:'Rogaland',
+    desc:'The oil capital with a charming old town (Gamle Stavanger) of white wooden houses from the 1800s — one of the best-preserved in Norway. Base camp for Preikestolen and Kjerag.',
+    tags:['Old Town', 'Fjords Gateway'], badges:[] },
+  { id:'no16', country:'no', category:'city', emoji:'⛪', title:'Trondheim', region:'Trøndelag',
+    desc:'Norway\'s third city, home to Nidaros Cathedral — the world\'s northernmost Gothic cathedral and historical crowning site of Norwegian kings. The old town wharf Nedre Elvehavn is delightful.',
+    tags:['Cathedral', 'Viking History', 'Culture'], badges:[] },
+
+  // History/Castles
+  { id:'no17', country:'no', category:'history', emoji:'⛏', title:'Røros', region:'Trøndelag',
+    desc:'A perfectly preserved 17th-century copper mining town with turf-roofed wooden buildings that feel untouched by centuries. UNESCO World Heritage, especially magical in winter snow.',
+    tags:['UNESCO', '17th Century', 'Mining'], badges:['unesco'] },
+  { id:'no18', country:'no', category:'castle', emoji:'🏰', title:'Akershus Fortress', region:'Oslo',
+    desc:'A medieval castle and fortress dominating Oslo\'s waterfront since 1299. Served as a royal residence, prison, and WWII occupation HQ. The ramparts offer great city and fjord views.',
+    tags:['Medieval', 'Oslo', '1299'], badges:[] },
+  { id:'no19', country:'no', category:'history', emoji:'⚔️', title:'Viking Ship Museum (Oslo)', region:'Oslo',
+    desc:'Three remarkably complete 9th-century Viking longships excavated from burial mounds. One of the world\'s great archaeological collections. A new expanded museum opened in 2026.',
+    tags:['Viking', 'Oslo', 'Museum'], badges:['highlight'] },
+  { id:'no20', country:'no', category:'history', emoji:'🌊', title:'Urnes Stave Church', region:'Sogn',
+    desc:'The oldest stave church in Norway (c. 1130), with extraordinary carved wood dragon and vine ornament that blends Viking and Romanesque styles. UNESCO-listed and strikingly remote.',
+    tags:['UNESCO', 'Viking', 'Medieval'], badges:['unesco'] },
+
+  // Experience
+  { id:'no21', country:'no', category:'experience', emoji:'🚂', title:'Flåm Railway', region:'Sogn',
+    desc:'One of the steepest standard-gauge railways in the world, dropping 863 m through 20 tunnels in 20 km. Passes the Kjosfossen waterfall, where the train stops for photos. Pure magic.',
+    tags:['Train Journey', 'Scenic', 'All seasons'], badges:['highlight'] },
+  { id:'no22', country:'no', category:'experience', emoji:'🚢', title:'Hurtigruten Coastal Voyage', region:'Nationwide',
+    desc:'The legendary postal ship route from Bergen to Kirkenes — 12 days along 2,500 km of coast, stopping at 34 ports. The original "world\'s most beautiful sea voyage." Works as a cruise or transport.',
+    tags:['11 nights', 'Coastal', 'Unique'], badges:['highlight'] },
+
+  // ══════════════ SWEDEN ══════════════
+  // Hikes
+  { id:'se1', country:'se', category:'hike', emoji:'🏔', title:'Kungsleden (The King\'s Trail)', region:'Lapland',
+    desc:'Sweden\'s most celebrated long-distance trail, running 440 km through subarctic mountain wilderness. Even the Abisko–Kebnekaise section (105 km) is world-class. STF huts make it accessible.',
+    tags:['440 km total', 'Jul–Sep', 'Hut-to-hut'], badges:['highlight'] },
+  { id:'se2', country:'se', category:'hike', emoji:'🦌', title:'Sarek National Park', region:'Lapland',
+    desc:'One of Europe\'s most remote parks — no marked trails, no cabins, no bridges. Six of Sweden\'s thirteen highest peaks are here. For experienced wilderness hikers only. Utterly spectacular.',
+    tags:['Trackless', 'Advanced', 'Wilderness'], badges:['hard'] },
+  { id:'se3', country:'se', category:'hike', emoji:'🌊', title:'Höga Kusten (High Coast) Trail', region:'Ångermanland',
+    desc:'A UNESCO coastline with some of the world\'s greatest post-glacial land uplift (800 m since the Ice Age). The 130 km trail winds through forest, past lakes, and along dramatic clifftop viewpoints.',
+    tags:['130 km', 'UNESCO', 'Jun–Sep'], badges:['unesco'] },
+  { id:'se4', country:'se', category:'hike', emoji:'🌲', title:'Skuleskogen National Park', region:'High Coast',
+    desc:'A compact but wild park of primeval forest, sheer sea cliffs, and ancient geology on the High Coast. The Slåttdalsskrevan gorge is one of Sweden\'s most dramatic natural features.',
+    tags:['Family-friendly', 'Coastal', 'Gorge'], badges:['easy'] },
+  { id:'se5', country:'se', category:'hike', emoji:'🌿', title:'Söderåsen National Park', region:'Skåne',
+    desc:'Southern Sweden\'s hidden gem — a deep ravine gorge system with old beech forests, waterfall streams, and rich birdlife. Excellent for shorter hikes in a lush, non-alpine landscape.',
+    tags:['Southern Sweden', 'Year-round', 'Accessible'], badges:['easy'] },
+
+  // Nature
+  { id:'se6', country:'se', category:'nature', emoji:'🏝', title:'Stockholm Archipelago', region:'Stockholm',
+    desc:'A maze of 30,000 islands stretching 80 km into the Baltic. Ferries leave from central Stockholm. Vaxholm, Sandhamn, and Utö are especially beautiful. Summer sailing is superb.',
+    tags:['Islands', 'Sailing', 'May–Sep'], badges:['highlight'] },
+  { id:'se7', country:'se', category:'nature', emoji:'🦅', title:'Abisko National Park', region:'Lapland',
+    desc:'One of the best spots in the world for northern lights — a peculiar microclimate keeps skies clear even when surrounding areas are clouded. The STF mountain station is a legendary base.',
+    tags:['Aurora', 'Arctic Circle', 'Hiking'], badges:['highlight'] },
+  { id:'se8', country:'se', category:'nature', emoji:'🌲', title:'Tyresta National Park', region:'Stockholm',
+    desc:'Just 20 km from central Stockholm, Tyresta protects ancient forest with trees up to 400 years old — a rare old-growth remnant near a major European capital. Easy access, rewarding trails.',
+    tags:['Near Stockholm', 'Old Growth', 'Easy'], badges:[] },
+
+  // Cities
+  { id:'se9', country:'se', category:'city', emoji:'👑', title:'Stockholm (Gamla Stan)', region:'Stockholm',
+    desc:'The medieval old town sits on its own island — a warren of ochre-and-terracotta facades, cobbled lanes, royal palaces, and the oldest pub in Sweden. The Vasa Museum and Skansen are nearby essentials.',
+    tags:['Medieval', 'Royal Palace', 'Museums'], badges:['highlight'] },
+  { id:'se10', country:'se', category:'city', emoji:'🌹', title:'Gothenburg', region:'Västra Götaland',
+    desc:'Sweden\'s second city has the warmest personality — Dutch-built canals, the world-class Liseberg amusement park, the Gothenburg Museum of Art, and arguably Sweden\'s best restaurant scene.',
+    tags:['Canals', 'Food Scene', 'Coastal'], badges:[] },
+  { id:'se11', country:'se', category:'city', emoji:'🔺', title:'Malmö', region:'Skåne',
+    desc:'Connected to Copenhagen by the Øresund Bridge, Malmö is a model of urban transformation. The spiraling Turning Torso tower, the revived Western Harbour, and Möllevången\'s food markets are all highlights.',
+    tags:['Architecture', 'Diverse', 'Bridge'], badges:[] },
+
+  // Castles & History
+  { id:'se12', country:'se', category:'castle', emoji:'🏰', title:'Visby (Gotland Island)', region:'Gotland',
+    desc:'Sweden\'s crown jewel of medieval history. UNESCO-listed walled city with a complete 3.6 km ring wall, 44 towers, and ruins of Gothic churches. A living medieval city of 23,000 people.',
+    tags:['UNESCO', 'Medieval', 'Island'], badges:['unesco'] },
+  { id:'se13', country:'se', category:'castle', emoji:'🏯', title:'Kalmar Castle', region:'Småland',
+    desc:'A fairy-tale Renaissance castle on the Baltic coast, pivotal in Scandinavian history as the site of the Kalmar Union (1397) uniting Denmark, Sweden, and Norway. Remarkably well-preserved.',
+    tags:['Renaissance', 'Baltic', '1397'], badges:['highlight'] },
+  { id:'se14', country:'se', category:'castle', emoji:'👸', title:'Drottningholm Palace', region:'Stockholm',
+    desc:'The private residence of the Swedish royal family, set on an island outside Stockholm. UNESCO-listed, with a Baroque park, Chinese Pavilion, and a perfectly intact 18th-century court theatre.',
+    tags:['UNESCO', 'Royal', 'Baroque'], badges:['unesco'] },
+  { id:'se15', country:'se', category:'castle', emoji:'🛡', title:'Gripsholm Castle', region:'Södermanland',
+    desc:'A round Renaissance lakeside castle at Mariefred with one of Sweden\'s oldest theatres and 4,000-piece royal portrait gallery. Accessible by historic steamship from Stockholm.',
+    tags:['Renaissance', 'Portrait Gallery', 'Steamship'], badges:[] },
+  { id:'se16', country:'se', category:'castle', emoji:'⛰', title:'Läckö Castle', region:'Västra Götaland',
+    desc:'A Baroque castle perched dramatically on a cliff above Lake Vänern, Sweden\'s largest lake. Built in the 13th century and transformed in the 17th. Hosts a famous summer opera festival.',
+    tags:['Baroque', 'Lake Vänern', 'Opera'], badges:[] },
+  { id:'se17', country:'se', category:'history', emoji:'⚱️', title:'Gamla Uppsala', region:'Uppsala',
+    desc:'Ancient Viking burial mounds dating to the 5th–6th centuries. Once the most sacred site in pagan Scandinavia, hosting great sacrificial festivals (blót). A museum explains the mythology.',
+    tags:['Viking', 'Burial Mounds', '5th century'], badges:['highlight'] },
+  { id:'se18', country:'se', category:'history', emoji:'⛏', title:'Falun Copper Mine', region:'Dalarna',
+    desc:'A UNESCO-listed mine that shaped Sweden\'s economy for 600 years and produced the distinctive red paint still used on farmhouses across Scandinavia. The underground tours are fascinating.',
+    tags:['UNESCO', 'Industrial', 'Dalarna'], badges:['unesco'] },
+
+  // Experiences
+  { id:'se19', country:'se', category:'experience', emoji:'🛷', title:'Icehotel (Jukkasjärvi)', region:'Lapland',
+    desc:'Built fresh every winter from 5,000 tons of ice cut from the Torne River. Stay in a sculpted ice suite, visit the ice chapel, and sleep in Arctic-grade sleeping bags on a bed of ice. Surreal.',
+    tags:['Dec–Apr', 'Unique', 'Luxury'], badges:['highlight'] },
+  { id:'se20', country:'se', category:'experience', emoji:'🎿', title:'Åre Ski Resort', region:'Jämtland',
+    desc:'Sweden\'s premier ski destination and home of the annual Alpine Ski World Cup. 90 runs, 42 lifts, and an exceptionally charming village with great après-ski. Summer hiking is equally excellent.',
+    tags:['Skiing', 'Winter', 'World Cup'], badges:[] },
+
+  // ══════════════ FINLAND ══════════════
+  // Hikes
+  { id:'fi1', country:'fi', category:'hike', emoji:'🏔', title:'Urho Kekkonen National Park', region:'Lapland',
+    desc:'Finland\'s second-largest park, a vast fell wilderness with gorges, open heaths, and reindeer. The Saariselkä area has excellent marked trails and is one of Finland\'s best aurora destinations.',
+    tags:['Multiple routes', 'Year-round', 'Aurora'], badges:['highlight'] },
+  { id:'fi2', country:'fi', category:'hike', emoji:'🌊', title:'Oulanka National Park', region:'Lapland',
+    desc:'Famous for the Bear\'s Ring Trail (Karhunkierros) — a 80 km route through rapids, suspension bridges, gorges, and ancient pine forests. Often voted Finland\'s most beautiful national park.',
+    tags:['80 km', 'Jun–Oct', 'Iconic'], badges:['highlight'] },
+  { id:'fi3', country:'fi', category:'hike', emoji:'🌅', title:'Koli National Park', region:'North Karelia',
+    desc:'The hills of Koli inspired Sibelius, Gallen-Kallela, and Finnish national romanticism. The view from Ukko-Koli (347 m) over Lake Pielinen is considered the Finnish "national view."',
+    tags:['Cultural', 'Year-round', 'Accessible'], badges:['moderate'] },
+  { id:'fi4', country:'fi', category:'hike', emoji:'🦊', title:'Nuuksio National Park', region:'Uusimaa',
+    desc:'Just 35 km from Helsinki, a surprisingly wild landscape of ancient bedrock, boreal forest, and dozens of clear lakes. Flying squirrels live here. Perfect for a wilderness fix near the capital.',
+    tags:['Near Helsinki', 'Easy', 'Year-round'], badges:['easy'] },
+  { id:'fi5', country:'fi', category:'hike', emoji:'🌿', title:'Teijo National Park', region:'Southwest Finland',
+    desc:'Coastal forests, tranquil lakes, rapids, and Iron Age history in a compact park near Salo. A wonderful off-the-beaten-track option with great canoeing and archipelago access.',
+    tags:['Canoe', 'Coastal', 'Quiet'], badges:['easy'] },
+
+  // Nature
+  { id:'fi6', country:'fi', category:'nature', emoji:'🌊', title:'Lake Saimaa', region:'South Karelia',
+    desc:'The fourth-largest lake in Europe — actually a vast system of 14,000 lakes connected by channels. Home to the critically endangered Saimaa ringed seal. Kayaking and houseboating are magical.',
+    tags:['Seal Watching', 'Kayak', 'Boat'], badges:['highlight'] },
+  { id:'fi7', country:'fi', category:'nature', emoji:'🏝', title:'Archipelago Sea', region:'Southwest Finland',
+    desc:'The world\'s largest archipelago by number of islands (over 50,000). The 850 km Archipelago Trail by bicycle and ferry is one of Europe\'s great touring routes through a scattered island world.',
+    tags:['Cycling', 'Ferries', 'Jun–Sep'], badges:['highlight'] },
+  { id:'fi8', country:'fi', category:'nature', emoji:'🎿', title:'Saariselkä & Levi', region:'Lapland',
+    desc:'The twin heartlands of Finnish Lapland — Saariselkä for backcountry wilderness, Levi for skiing and husky safaris. In March, perfect light, snow, and aurora combine in the fell landscape.',
+    tags:['Skiing', 'Aurora', 'Reindeer'], badges:[] },
+  { id:'fi9', country:'fi', category:'nature', emoji:'🌲', title:'Repovesi National Park', region:'South Karelia',
+    desc:'A dramatic park of quartzite ridges, suspension bridges, and crystal-clear lakes near Kouvola. Excellent bouldering and via ferrata routes, plus beginner-friendly marked trails.',
+    tags:['Climbing', 'Lakes', 'Accessible'], badges:['moderate'] },
+
+  // Cities
+  { id:'fi10', country:'fi', category:'city', emoji:'⚪', title:'Helsinki', region:'Uusimaa',
+    desc:'A compact, design-forward capital on a rocky Baltic peninsula. The Senate Square, Market Square, and Esplanade are iconic. Don\'t miss the underground Temppeliaukio Rock Church and Amos Rex museum.',
+    tags:['Design', 'Architecture', 'Baltic'], badges:['highlight'] },
+  { id:'fi11', country:'fi', category:'city', emoji:'🌊', title:'Turku', region:'Southwest Finland',
+    desc:'Finland\'s oldest city and former capital, with a 13th-century castle, a medieval cathedral, and a vibrant riverside market. Frequent ferries to Stockholm make it a natural gateway.',
+    tags:['Medieval', 'Ferry Hub', 'Oldest City'], badges:[] },
+  { id:'fi12', country:'fi', category:'city', emoji:'🎻', title:'Tampere', region:'Pirkanmaa',
+    desc:'Built between two lakes on a narrow ridge of rapids. Once Finland\'s industrial heartbeat, now a lively cultural city with the Moomin Museum, great restaurants, and superb sauna culture.',
+    tags:['Lakes', 'Moomin', 'Culture'], badges:[] },
+
+  // History & Castles
+  { id:'fi13', country:'fi', category:'castle', emoji:'🏰', title:'Suomenlinna Sea Fortress', region:'Helsinki',
+    desc:'An 18th-century sea fortress spread across six islands, a 15-minute ferry from Helsinki\'s market square. UNESCO-listed with museums, tunnels, cannon batteries, and a working community of 800 residents.',
+    tags:['UNESCO', 'Ferry', '1748'], badges:['unesco'] },
+  { id:'fi14', country:'fi', category:'castle', emoji:'🛡', title:'Olavinlinna Castle', region:'Savonlinna',
+    desc:'A three-tower medieval castle rising from a rocky island in Lake Saimaa (1475). One of Northern Europe\'s best-preserved medieval fortresses and the dramatic backdrop for the Savonlinna Opera Festival.',
+    tags:['Medieval', '1475', 'Opera'], badges:['highlight'] },
+  { id:'fi15', country:'fi', category:'castle', emoji:'⚔️', title:'Häme Castle', region:'Hämeenlinna',
+    desc:'One of Finland\'s oldest fortresses, founded by Swedish crusaders in the 13th century. The distinctive brick architecture and excellent historical museum make this a standout even without scenic setting.',
+    tags:['13th Century', 'Crusader', 'Museum'], badges:[] },
+  { id:'fi16', country:'fi', category:'history', emoji:'🏡', title:'Old Rauma', region:'Satakunta',
+    desc:'One of the best-preserved wooden towns in the Nordic countries — around 600 wooden buildings from the 18th and 19th centuries in their original street pattern. UNESCO-listed and very much alive.',
+    tags:['UNESCO', 'Wooden Town', '18th Century'], badges:['unesco'] },
+  { id:'fi17', country:'fi', category:'history', emoji:'🌊', title:'Porvoo', region:'Uusimaa',
+    desc:'Finland\'s second oldest town, famous for its red riverside wooden warehouses and medieval stone cathedral. Just 50 km from Helsinki. The cobblestone old town is irresistible.',
+    tags:['Medieval', 'Day Trip', 'Photography'], badges:[] },
+  { id:'fi18', country:'fi', category:'history', emoji:'🏛', title:'Senate Square & Cathedral, Helsinki', region:'Helsinki',
+    desc:'Designed by Carl Ludwig Engel in the 1820s as Finland\'s neo-classical centrepiece. The white cathedral, Government Palace, and university buildings around the square form one of Europe\'s finest ensembles.',
+    tags:['Neoclassical', 'Architecture', '1820s'], badges:[] },
+
+  // Experiences
+  { id:'fi19', country:'fi', category:'experience', emoji:'🧖', title:'Traditional Finnish Sauna', region:'Nationwide',
+    desc:'An irreplaceable cultural institution. Finland has 3.3 million saunas for 5.5 million people. The ritual: heat up, sweat, plunge into a lake or roll in snow, repeat. Smoke saunas in Savonlinna are legendary.',
+    tags:['Cultural', 'Year-round', 'Iconic'], badges:['highlight'] },
+  { id:'fi20', country:'fi', category:'experience', emoji:'🐕', title:'Husky & Reindeer Safaris', region:'Lapland',
+    desc:'Run a dog sled team through a snow-covered forest or take a reindeer sleigh ride across an open fell. Best from December to April. Rovaniemi (official hometown of Santa) is the main hub.',
+    tags:['Dec–Apr', 'Family', 'Lapland'], badges:['highlight'] },
+  { id:'fi21', country:'fi', category:'experience', emoji:'🧇', title:'Midnight Sun Festival', region:'Rovaniemi',
+    desc:'In June and July, the sun never sets above the Arctic Circle. Rovaniemi and Saariselkä hold outdoor events, concerts, and festivals under continuous daylight — an otherworldly experience.',
+    tags:['Jun–Jul', 'Arctic', 'Festival'], badges:[] },
+  { id:'fi22', country:'fi', category:'experience', emoji:'🎭', title:'Savonlinna Opera Festival', region:'Savonlinna',
+    desc:'One of the world\'s most dramatically situated opera festivals — performances inside the medieval Olavinlinna Castle, with the audience seated on the lakeside ramparts under Finnish summer skies.',
+    tags:['July', 'Opera', 'Castle'], badges:['highlight'] },
+];
+
+let activeCountry = 'all';
+let activeCategory = 'all';
+
+function init() {
+  renderAll();
+}
+
+function renderAll() {
+  const search = document.getElementById('searchInput').value.toLowerCase();
+  const countries = ['no', 'se', 'fi'];
+
+  let totalVisible = 0;
+
+  countries.forEach(c => {
+    const grid = document.getElementById(`grid-${c}`);
+    const section = document.getElementById(`sec-${c}`);
+    const counter = document.getElementById(`count-${c}`);
+
+    const filtered = DESTINATIONS.filter(d => {
+      if (d.country !== c) return false;
+      if (activeCountry !== 'all' && d.country !== activeCountry) return false;
+      if (activeCategory !== 'all' && d.category !== activeCategory) return false;
+      if (search && !d.title.toLowerCase().includes(search) && !d.desc.toLowerCase().includes(search) && !d.region.toLowerCase().includes(search)) return false;
+      return true;
+    });
+
+    if (filtered.length === 0 || (activeCountry !== 'all' && activeCountry !== c)) {
+      grid.innerHTML = '';
+      section.style.display = 'none';
+    } else {
+      section.style.display = 'flex';
+      counter.textContent = `${filtered.length} destinations`;
+      grid.innerHTML = filtered.map((d, i) => renderCard(d, i)).join('');
+      totalVisible += filtered.length;
+    }
+  });
+
+  document.getElementById('statTotal').textContent = totalVisible || DESTINATIONS.length;
+
+  const noResults = document.getElementById('noResults');
+  noResults.style.display = totalVisible === 0 ? 'block' : 'none';
+}
+
+function renderCard(d, i) {
+  const catLabels = { nature:'Nature', hike:'Hiking', city:'City', castle:'Castle', history:'History', experience:'Experience' };
+  const catLabel = catLabels[d.category] || d.category;
+  const delay = Math.min(i * 60, 400);
+
+  const tagsHTML = d.tags.map(t => {
+    const cls = t === 'UNESCO' ? 'meta-tag unesco' : 'meta-tag';
+    return `<span class="${cls}">${t}</span>`;
+  }).join('');
+
+  const badgesHTML = d.badges.map(b => {
+    if (b === 'highlight') return `<span class="meta-tag highlight">⭐ Must-See</span>`;
+    if (b === 'unesco') return `<span class="meta-tag unesco">🏛 UNESCO</span>`;
+    if (b === 'hard') return `<span class="meta-tag hard">🔴 Strenuous</span>`;
+    if (b === 'moderate') return `<span class="meta-tag moderate">🟡 Moderate</span>`;
+    if (b === 'easy') return `<span class="meta-tag easy">🟢 Accessible</span>`;
+    return '';
+  }).join('');
+
+  const countryName = { no: 'Norway', se: 'Sweden', fi: 'Finland' }[d.country];
+
+  return `
+    <div class="card ${d.country}" style="animation-delay:${delay}ms">
+      <div class="card-visual">
+        <span class="card-emoji">${d.emoji}</span>
+        <span class="card-badge">${d.region}</span>
+      </div>
+      <div class="card-body">
+        <div class="card-category">
+          <span class="cat-dot ${d.category}"></span>
+          ${catLabel} &nbsp;·&nbsp; ${countryName}
+        </div>
+        <div class="card-title">${d.title}</div>
+        <div class="card-desc">${d.desc}</div>
+        <div class="card-meta">${badgesHTML}${tagsHTML}</div>
+      </div>
+    </div>
+  `;
+}
+
+function setCountry(c) {
+  activeCountry = c;
+
+  document.querySelectorAll('.tab').forEach(t => {
+    t.className = 'tab';
+  });
+  const tabEl = document.getElementById(`tab-${c}`);
+  if (tabEl) {
+    if (c === 'all') tabEl.className = 'tab active-all';
+    else tabEl.className = `tab active-${c}`;
+  }
+
+  renderAll();
+}
+
+function setCategory(cat) {
+  activeCategory = cat;
+
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById(`filt-${cat}`).classList.add('active');
+
+  renderAll();
+}
+
+function filterCards() {
+  renderAll();
+}
+
+init();
+</script>
+</body>
+</html>
